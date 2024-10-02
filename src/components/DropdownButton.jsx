@@ -38,7 +38,7 @@ const DropdownButton = ({ label, items }) => {
 						<li key={index} className='my-[25px]'>
 							<Link
 								className='text-base w-full p-3 hover:text-slate-900  hover:shadow-transparent'
-								href={item.path}
+								to={item.path}
 								target={item.target}
 							>
 								{item.title}
