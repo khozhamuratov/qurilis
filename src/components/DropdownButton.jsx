@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const DropdownButton = ({ label, items }) => {
 	const [isOpen, setIsOpen] = useState(false)
@@ -35,13 +36,13 @@ const DropdownButton = ({ label, items }) => {
 				<ul className='absolute z-10 left-0 w-full mt-2 bg-gray-700 text-white rounded-lg shadow-lg'>
 					{items.map((item, index) => (
 						<li key={index} className='my-[25px]'>
-							<a
+							<Link
 								className='text-base w-full p-3 hover:text-slate-900  hover:shadow-transparent'
 								href={item.path}
 								target={item.target}
 							>
 								{item.title}
-							</a>
+							</Link>
 						</li>
 					))}
 				</ul>
