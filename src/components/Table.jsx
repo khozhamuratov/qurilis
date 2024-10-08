@@ -5,15 +5,17 @@ import { useTable } from 'react-table'
 const EditableTable = () => {
 	const initialData = [
 		{
+			index: 1,
 			name: '',
 			unit: '',
-			volume: '',
-			labor: '',
-			machineName: '',
-			machineCount: 0,
-			duration: 0,
-			shifts: 0,
-			workers: 0,
+			numUnit: '',
+			volumePeople: '',
+			volumeMachine: '',
+			peoplesDay: '',
+			machineDay: '',
+			duration: '',
+			shifts: '',
+			workers: '',
 			team: '',
 		},
 	]
@@ -22,20 +24,26 @@ const EditableTable = () => {
 
 	const columns = React.useMemo(
 		() => [
-			{ Header: 'Nomi', accessor: 'name', minWidth: 250 },
-			{ Header: "O'l. bir.", accessor: 'unit', minWidth: 50 },
-			{ Header: 'Ish hajmlari miqdori', accessor: 'volume', minWidth: 100 },
-			{ Header: 'Mehnat sarfi, kishi-kun', accessor: 'labor', minWidth: 100 },
+			{ Header: 'Nomeri', accessor: 'index', minWidth: 20 },
+			{ Header: 'Ishlarning nomlanishi', accessor: 'name', minWidth: 250 },
+			{ Header: "O'lchov birligi", accessor: 'unit', minWidth: 30 },
+			{ Header: 'Soni', accessor: 'numUnit', minWidth: 20 },
+			{ Header: `Me'yor kishi-soat`, accessor: 'volumePeople', minWidth: 100 },
+			{ Header: "Me'yor Mash.-soat", accessor: 'volumeMachine', minWidth: 100 },
 			{
-				Header: 'Talab etiladigan mashinalar',
-				accessor: 'machineName',
-				minWidth: 120,
+				Header: 'Kishi-kun',
+				accessor: 'peoplesDay',
+				minWidth: 10,
 			},
-			{ Header: 'Mash-smena soni', accessor: 'machineCount', minWidth: 50 },
-			{ Header: 'Ish davomiyligi, kunlar', accessor: 'duration', minWidth: 50 },
-			{ Header: 'Smena soni', accessor: 'shifts', minWidth: 30 },
+			{ Header: 'Mash-kun', accessor: 'machineDay', minWidth: 50 },
+			{
+				Header: 'Ishchilar zveno tarkibi va soni',
+				accessor: 'duration',
+				minWidth: 100,
+			},
+			{ Header: 'Smenalar soni', accessor: 'shifts', minWidth: 30 },
 			{ Header: 'Smenadagi ishchilar soni', accessor: 'workers', minWidth: 50 },
-			{ Header: 'Brigada tarkibi', accessor: 'team', minWidth: 130 },
+			{ Header: 'Ishlar davomiyligi, kun', accessor: 'team', minWidth: 50 },
 		],
 		[]
 	)
@@ -58,18 +66,28 @@ const EditableTable = () => {
 		setData([
 			...data,
 			{
+				index: 1,
 				name: '',
 				unit: '',
-				volume: '',
-				labor: '',
-				machineName: '',
-				machineCount: 0,
-				duration: 0,
-				shifts: 0,
-				workers: 0,
+				numUnit: '',
+				volumePeople: '',
+				volumeMachine: '',
+				peoplesDay: '',
+				machineDay: '',
+				duration: '',
+				shifts: '',
+				workers: '',
 				team: '',
 			},
 		])
+	}
+
+	const removeRow = () => {
+		if (data.length > 1) {
+			setData(data.slice(0, data.length - 1))
+		} else {
+			alert('Невозможно удалить последнюю строку')
+		}
 	}
 
 	return (
@@ -192,13 +210,22 @@ const EditableTable = () => {
 				</tbody>
 			</table>
 			<div className='mt-4 flex justify-between'>
-				<button
-					type='button'
-					className='bg-green-500 text-white px-4 py-2 rounded'
-					onClick={addRow}
-				>
-					+ Добавить строку
-				</button>
+				<div className='flex items-center justify-center gap-3'>
+					<button
+						type='button'
+						className='bg-green-500 text-white px-4 py-2 rounded'
+						onClick={addRow}
+					>
+						+ Добавить строку
+					</button>
+					<button
+						type='button'
+						className='bg-red-500 text-white px-4 py-2 rounded'
+						onClick={removeRow}
+					>
+						- Удалить строку
+					</button>
+				</div>
 				<button
 					type='submit'
 					className='bg-blue-500 text-white px-4 py-2 rounded'

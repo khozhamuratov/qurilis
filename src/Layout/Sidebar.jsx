@@ -36,7 +36,7 @@ const Sidebar = () => {
 	return (
 		<section className='min-w-[340px] p-7 z-10 bg-slate-800 font-serif text-white h-screen'>
 			<div className='flex flex-col gap-7'>
-				<Link href='/' className='text-[28px] text-center'>
+				<Link to='/' className='text-[28px] text-center'>
 					Qurilishni tashkil etish
 				</Link>
 				<DropdownButton

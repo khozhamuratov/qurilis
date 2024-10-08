@@ -33,7 +33,12 @@ const DropdownButton = ({ label, items }) => {
 				</svg>
 			</button>
 			{isOpen && (
-				<ul className='absolute z-10 left-0 w-full mt-2 bg-gray-700 text-white rounded-lg shadow-lg'>
+				<ul
+					onMouseLeave={() => {
+						setIsOpen(false)
+					}}
+					className='absolute z-10 left-0 w-full mt-2 bg-gray-700 text-white rounded-lg shadow-lg'
+				>
 					{items.map((item, index) => (
 						<li key={index} className='my-[25px]'>
 							<Link
