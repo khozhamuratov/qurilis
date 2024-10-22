@@ -1,72 +1,53 @@
+import {
+	Button,
+	Paper,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TableRow,
+	TextField,
+} from '@mui/material'
 import React, { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { useTable } from 'react-table'
+import Datepicker from 'react-tailwindcss-datepicker'
 
-const EditableTable = () => {
-	const initialData = [
-		{
-			index: 1,
-			name: '',
-			unit: '',
-			numUnit: '',
-			volumePeople: '',
-			volumeMachine: '',
-			peoplesDay: '',
-			machineDay: '',
-			duration: '',
-			shifts: '',
-			workers: '',
-			team: '',
-		},
-	]
+const initialData = [
+	{
+		id: 1,
+		name: '',
+		unit: '',
+		numUnit: '',
+		volumePeople: '',
+		volumeMachine: '',
+		peoplesDay: '',
+		machineDay: '',
+		nameTeam: '',
+		numTeam: '',
+		shifts: '',
+		workers: '',
+		duration: '', // Calculated field
+	},
+]
 
+function CrudTable() {
 	const [data, setData] = useState(initialData)
-
-	const columns = React.useMemo(
-		() => [
-			{ Header: 'Nomeri', accessor: 'index', minWidth: 20 },
-			{ Header: 'Ishlarning nomlanishi', accessor: 'name', minWidth: 250 },
-			{ Header: "O'lchov birligi", accessor: 'unit', minWidth: 30 },
-			{ Header: 'Soni', accessor: 'numUnit', minWidth: 20 },
-			{ Header: `Me'yor kishi-soat`, accessor: 'volumePeople', minWidth: 100 },
-			{ Header: "Me'yor Mash.-soat", accessor: 'volumeMachine', minWidth: 100 },
-			{
-				Header: 'Kishi-kun',
-				accessor: 'peoplesDay',
-				minWidth: 10,
-			},
-			{ Header: 'Mash-kun', accessor: 'machineDay', minWidth: 50 },
-			{
-				Header: 'Ishchilar zveno tarkibi va soni',
-				accessor: 'duration',
-				minWidth: 100,
-			},
-			{ Header: 'Smenalar soni', accessor: 'shifts', minWidth: 30 },
-			{ Header: 'Smenadagi ishchilar soni', accessor: 'workers', minWidth: 50 },
-			{ Header: 'Ishlar davomiyligi, kun', accessor: 'team', minWidth: 50 },
-		],
-		[]
-	)
-
-	const { control, handleSubmit, reset } = useForm({
-		defaultValues: { rows: data },
+	const [value, setValue] = useState({
+		startDate: null,
+		endDate: null,
 	})
-
-	const onSubmit = data => {
-		console.log('Отправленные данные:', data)
+	const handleChange = (id, field, value) => {
+		const updatedData = data.map(row =>
+			row.id === id ? { ...row, [field]: value } : row
+		)
+		setData(updatedData)
 	}
 
-	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-		useTable({
-			columns,
-			data,
-		})
-
-	const addRow = () => {
+	const handleAddRow = () => {
 		setData([
 			...data,
 			{
-				index: 1,
+				id: data.length + 1,
 				name: '',
 				unit: '',
 				numUnit: '',
@@ -74,167 +55,537 @@ const EditableTable = () => {
 				volumeMachine: '',
 				peoplesDay: '',
 				machineDay: '',
-				duration: '',
+				nameTeam: '',
+				numTeam: '',
 				shifts: '',
 				workers: '',
-				team: '',
+				duration: '', // Calculated field
 			},
 		])
 	}
 
-	const removeRow = () => {
-		if (data.length > 1) {
-			setData(data.slice(0, data.length - 1))
+	function strToNum(str) {
+		const match = str.match(/^\d+/)
+		return match ? Number(match[0]) : null
+	}
+
+	const handleDeleteRow = id => {
+		setData(data.filter(row => row.id !== id))
+	}
+
+	const handleSaveData = () => {
+		const updatedData = data.map(row => ({
+			...row,
+			peoplesDay: calculateKishiKun(row),
+			machineDay: calculateMashKun(row),
+			duration: calculateDuration(row),
+			startDate: value.startDate,
+		}))
+		console.log('Data saved:', updatedData)
+	}
+
+	const calculateKishiKun = row => {
+		const unit = strToNum(row.unit)
+		const unitsNum = row.numUnit / unit
+		const result = (row?.volumePeople * unitsNum) / 8.2
+
+		return result ? result.toFixed(2) : 0
+	}
+
+	const calculateMashKun = row => {
+		const unit = strToNum(row.unit)
+		const unitsNum = row.numUnit / unit
+		const result = (row?.volumeMachine * unitsNum) / 8.2
+
+		return result ? result.toFixed(2) : 0
+	}
+
+	const calculateDuration = row => {
+		const kishiKun = calculateKishiKun(row)
+		const mashKun = calculateMashKun(row)
+		let result
+
+		if ((kishiKun && mashKun) || kishiKun) {
+			result = parseFloat(kishiKun)
+
+			if (row.numTeam) {
+				result = (result / row.numTeam).toFixed(2)
+
+				console.log(result)
+			}
+			if (row.shifts) {
+				result = result / row.shifts
+			}
 		} else {
-			alert('Невозможно удалить последнюю строку')
+			result = parseFloat(mashKun)
+
+			if (row.numTeam) {
+				result = (result / row.numTeam).toFixed(2)
+			} else if (row.shifts) {
+				result = result / row.shifts
+			}
 		}
+
+		return result < 1 ? 1 : Math.round(result)
 	}
 
 	return (
-		<form className='mx-5 mt-10' onSubmit={handleSubmit(onSubmit)}>
-			<table
-				{...getTableProps()}
-				className='border-collapse border border-gray-300'
+		<div className='flex flex-col items-start justify-center p-4 gap-5'>
+			<TableContainer
+				component={Paper}
+				sx={{ maxWidth: '100%', overflowX: 'auto', fontSize: 12 }}
 			>
-				<thead>
-					<tr>
-						<th
-							rowSpan='2'
-							className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'
-						>
-							№
-						</th>
-						<th
-							rowSpan='2'
-							className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'
-						>
-							Ishlarning nomlanishi
-						</th>
-						<th
-							colSpan='2'
-							className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'
-						>
-							Ishlar hajmi
-						</th>
-						<th
-							colSpan='2'
-							className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'
-						>
-							Vaqt me’yori
-						</th>
-						<th
-							colSpan='2'
-							className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'
-						>
-							Mehnat sarfi
-						</th>
-						<th
-							rowSpan='2'
-							className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'
-						>
-							Ishchilar zveno tarkibi va soni
-						</th>
-						<th
-							rowSpan='2'
-							className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'
-						>
-							Smenalar soni
-						</th>
-						<th
-							rowSpan='2'
-							className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'
-						>
-							Smenadagi ishchilar soni
-						</th>
-						<th
-							rowSpan='2'
-							className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'
-						>
-							Ishlar davomiyligi, kun
-						</th>
-					</tr>
-					<tr>
-						<th className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'>
-							O'lchov birligi
-						</th>
-						<th className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'>
-							Soni
-						</th>
-						<th className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'>
-							Me'yor kishi-soat
-						</th>
-						<th className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'>
-							Me'yor Mash.-soat
-						</th>
-						<th className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'>
-							Kishi-kun
-						</th>
-						<th className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center bg-gray-100'>
-							Mash-kun
-						</th>
-					</tr>
-				</thead>
-				<tbody {...getTableBodyProps()}>
-					{rows.map((row, rowIndex) => {
-						prepareRow(row)
-						const { key, ...rest } = row.getRowProps()
-						return (
-							<tr key={key} {...rest}>
-								{row.cells.map((cell, index) => (
-									<td
-										key={rowIndex}
-										{...cell.getCellProps()}
-										className='border border-gray-300 text-[14px] font-normal px-1 py-1 text-center'
-									>
-										<Controller
-											name={`rows[${rowIndex}].${cell.column.id}`}
-											control={control}
-											render={({ field }) => (
-												<React.Fragment>
-													<input
-														{...field}
-														className='w-full text-center focus:outline-none'
-														style={{
-															minWidth: cell.column.minWidth,
-															maxWidth: '100%',
-														}}
-													/>
-												</React.Fragment>
-											)}
-										/>
-									</td>
-								))}
-							</tr>
-						)
-					})}
-				</tbody>
-			</table>
-			<div className='mt-4 flex justify-between'>
-				<div className='flex items-center justify-center gap-3'>
-					<button
-						type='button'
-						className='bg-green-500 text-white px-4 py-2 rounded'
-						onClick={addRow}
-					>
-						+ Добавить строку
-					</button>
-					<button
-						type='button'
-						className='bg-red-500 text-white px-4 py-2 rounded'
-						onClick={removeRow}
-					>
-						- Удалить строку
-					</button>
-				</div>
-				<button
-					type='submit'
-					className='bg-blue-500 text-white px-4 py-2 rounded'
+				<Table
+					sx={{
+						minWidth: 650,
+						border: 1,
+						borderColor: 'grey.300',
+						borderCollapse: 'collapse',
+					}}
 				>
-					Сохранить
-				</button>
-			</div>
-		</form>
+					<TableHead>
+						<TableRow>
+							<TableCell
+								rowSpan={2}
+								width={10}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								№
+							</TableCell>
+							<TableCell
+								rowSpan={2}
+								width={350}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Ishlarning nomlanishi
+							</TableCell>
+							<TableCell
+								colSpan={2}
+								width={100}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Ishlar hajmi
+							</TableCell>
+							<TableCell
+								colSpan={2}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Vaqt me’yori
+							</TableCell>
+							<TableCell
+								colSpan={2}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Mehnat sarfi
+							</TableCell>
+							<TableCell
+								rowSpan={2}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Ishchilar zveno tarkibi
+							</TableCell>{' '}
+							<TableCell
+								rowSpan={2}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Soni
+							</TableCell>
+							<TableCell
+								rowSpan={2}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Smenalar soni
+							</TableCell>
+							<TableCell
+								rowSpan={2}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Smenadagi ishchilar soni
+							</TableCell>
+							<TableCell
+								rowSpan={2}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Ishlar davomiyligi, kun
+							</TableCell>
+						</TableRow>
+						<TableRow>
+							<TableCell
+								width={50}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								O'lchov birligi
+							</TableCell>
+							<TableCell
+								width={100}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Soni
+							</TableCell>
+							<TableCell
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Me'yor kishi-soat
+							</TableCell>
+							<TableCell
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Me'yor Mash.-soat
+							</TableCell>
+							<TableCell
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Kishi-kun
+							</TableCell>
+							<TableCell
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Mash-kun
+							</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{data.map((row, index) => (
+							<TableRow key={row.id}>
+								<TableCell
+									sx={{
+										textAlign: 'center',
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+									}}
+								>
+									{index + 1}
+								</TableCell>
+								<TableCell
+									sx={{
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+										width: '100%',
+									}}
+								>
+									<TextField
+										fullWidth
+										value={row.name}
+										onChange={e => handleChange(row.id, 'name', e.target.value)}
+										variant='outlined'
+										size='small'
+										sx={{ borderRadius: 0, width: '100%' }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+										width: '100%',
+									}}
+								>
+									<TextField
+										fullWidth
+										value={row.unit}
+										onChange={e => handleChange(row.id, 'unit', e.target.value)}
+										variant='outlined'
+										size='small'
+										sx={{ borderRadius: 0, width: '100%' }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+										width: '100%',
+									}}
+								>
+									<TextField
+										fullWidth
+										value={row.numUnit}
+										onChange={e =>
+											handleChange(row.id, 'numUnit', e.target.value)
+										}
+										variant='outlined'
+										size='small'
+										sx={{ borderRadius: 0, width: '100%' }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+										width: '100%',
+									}}
+								>
+									<TextField
+										fullWidth
+										value={row.volumePeople}
+										onChange={e =>
+											handleChange(row.id, 'volumePeople', e.target.value)
+										}
+										variant='outlined'
+										size='small'
+										sx={{ borderRadius: 0, width: '100%' }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+										width: '100%',
+									}}
+								>
+									<TextField
+										fullWidth
+										value={row.volumeMachine}
+										onChange={e =>
+											handleChange(row.id, 'volumeMachine', e.target.value)
+										}
+										variant='outlined'
+										size='small'
+										sx={{ borderRadius: 0, width: '100%' }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										textAlign: 'center',
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+									}}
+								>
+									{calculateKishiKun(row)}
+								</TableCell>
+								<TableCell
+									sx={{
+										textAlign: 'center',
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+									}}
+								>
+									{calculateMashKun(row)}
+								</TableCell>
+								<TableCell
+									sx={{
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+										width: '100%',
+									}}
+								>
+									<TextField
+										fullWidth
+										value={row.nameTeam}
+										onChange={e =>
+											handleChange(row.id, 'nameTeam', e.target.value)
+										}
+										variant='outlined'
+										size='small'
+										sx={{ borderRadius: 0, width: '100%' }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+										width: '100%',
+									}}
+								>
+									<TextField
+										fullWidth
+										value={row.numTeam}
+										onChange={e =>
+											handleChange(row.id, 'numTeam', e.target.value)
+										}
+										variant='outlined'
+										size='small'
+										className='text-[10px]'
+										sx={{ borderRadius: 0, width: '100%' }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+										width: '100%',
+									}}
+								>
+									<TextField
+										fullWidth
+										value={row.shifts}
+										onChange={e =>
+											handleChange(row.id, 'shifts', e.target.value)
+										}
+										variant='outlined'
+										size='small'
+										sx={{ borderRadius: 0, width: '100%' }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+										width: '100%',
+									}}
+								>
+									<TextField
+										fullWidth
+										value={row.workers}
+										onChange={e =>
+											handleChange(row.id, 'workers', e.target.value)
+										}
+										variant='outlined'
+										size='small'
+										sx={{ borderRadius: 0, width: '100%' }}
+									/>
+								</TableCell>
+								<TableCell
+									sx={{
+										textAlign: 'center',
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+									}}
+								>
+									{calculateDuration(row)}
+								</TableCell>
+								<TableCell
+									sx={{
+										textAlign: 'center',
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+									}}
+								>
+									<Button
+										onClick={() => handleDeleteRow(row.id)}
+										className='!bg-red-400'
+									>
+										<p className='text-[12px] text-black'>Ochirish</p>
+									</Button>
+								</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+				<div className='flex w-[80%] py-5 gap-5 justify-between mx-auto items-center'>
+					<Datepicker
+						toggleClassName={'w-[40px]'}
+						asSingle={true}
+						useRange={false}
+						inputClassName={
+							'text-[14px] shadow-lg bg-slate-800 px-3 py-2 rounded-md w-full'
+						}
+						containerClassName={'w-[800px] flex items-center justify center'}
+						placeholder='Qurilish boshlanadigan datani kiriting'
+						value={value}
+						onChange={newValue => setValue(newValue)}
+					/>
+
+					<Button
+						className='w-full !bg-green-300'
+						onClick={handleAddRow}
+						color='primary'
+					>
+						Qator qoshish
+					</Button>
+					<Button
+						className='w-full !bg-blue-300'
+						onClick={handleSaveData}
+						color='success'
+					>
+						saqlash
+					</Button>
+				</div>
+			</TableContainer>
+		</div>
 	)
 }
 
-export default EditableTable
+export default CrudTable

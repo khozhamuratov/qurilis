@@ -60,11 +60,10 @@ const ConstructionTimeline = () => {
 			<h2 className='text-center'>Календарный график строительных процессов</h2>
 			<Gantt
 				tasks={tasks}
-				columnWidth={60} // Ширина столбцов
-				barFill={80} // Заполнение строки задачи
-				handleWidth={0} // Отключение ручек перетаскивания
-				listCellWidth='155px' // Ширина колонки списка задач
-				// Отключаем редактирование и перетаскивание задач
+				columnWidth={60}
+				barFill={80}
+				handleWidth={0}
+				listCellWidth='155px'
 				isEditable={false}
 			/>
 		</div>
