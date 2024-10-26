@@ -40,9 +40,9 @@ const DropdownButton = ({ label, items }) => {
 					className='absolute z-10 left-0 w-full mt-2 bg-gray-700 text-white rounded-lg shadow-lg'
 				>
 					{items.map((item, index) => (
-						<li key={index} className='my-[25px]'>
+						<li key={index} className='w-full my-[15px]'>
 							<Link
-								className='text-base w-full p-3 hover:text-slate-900  hover:shadow-transparent'
+								className='block text-base w-full p-2 hover:text-slate-900  hover:shadow-transparent'
 								to={item.path}
 								target={item.target}
 							>

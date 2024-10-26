@@ -9,8 +9,11 @@ import {
 	TableRow,
 	TextField,
 } from '@mui/material'
+import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import dayjs from 'dayjs'
 import React, { useState } from 'react'
-import Datepicker from 'react-tailwindcss-datepicker'
+import { useDispatch } from 'react-redux'
 
 const initialData = [
 	{
@@ -32,16 +35,24 @@ const initialData = [
 
 function CrudTable() {
 	const [data, setData] = useState(initialData)
-	const [value, setValue] = useState({
-		startDate: null,
-		endDate: null,
-	})
+	const [selectedDate, setSelectedDate] = useState(null)
+	const [value, setValue] = useState(null)
+
 	const handleChange = (id, field, value) => {
 		const updatedData = data.map(row =>
 			row.id === id ? { ...row, [field]: value } : row
 		)
 		setData(updatedData)
 	}
+
+	const handleDateChange = newValue => {
+		const formattedDate = dayjs(newValue).format('YYYY, MM, DD') // Example format
+		console.log('Selected Date:', formattedDate)
+		setSelectedDate(newValue)
+		setValue(formattedDate)
+	}
+
+	const dispatch = useDispatch()
 
 	const handleAddRow = () => {
 		setData([
@@ -74,14 +85,16 @@ function CrudTable() {
 	}
 
 	const handleSaveData = () => {
-		const updatedData = data.map(row => ({
-			...row,
-			peoplesDay: calculateKishiKun(row),
-			machineDay: calculateMashKun(row),
-			duration: calculateDuration(row),
-			startDate: value.startDate,
-		}))
-		console.log('Data saved:', updatedData)
+		// const updatedData = data.map(row => ({
+		// 	...row,
+		// 	peoplesDay: calculateKishiKun(row),
+		// 	machineDay: calculateMashKun(row),
+		// 	duration: calculateDuration(row),
+		// 	startDate: value.startDate.getTime(),
+		// }))
+		// dispatch(setTableData(updatedData))
+		// console.log('Data saved:', updatedData)
+		console.log(value)
 	}
 
 	const calculateKishiKun = row => {
@@ -555,32 +568,21 @@ function CrudTable() {
 					</TableBody>
 				</Table>
 				<div className='flex w-[80%] py-5 gap-5 justify-between mx-auto items-center'>
-					<Datepicker
-						toggleClassName={'w-[40px]'}
-						asSingle={true}
-						useRange={false}
-						inputClassName={
-							'text-[14px] shadow-lg bg-slate-800 px-3 py-2 rounded-md w-full'
-						}
-						containerClassName={'w-[800px] flex items-center justify center'}
-						placeholder='Qurilish boshlanadigan datani kiriting'
-						value={value}
-						onChange={newValue => setValue(newValue)}
-					/>
+					<LocalizationProvider dateAdapter={AdapterDayjs}>
+						<DesktopDatePicker
+							label='Select a date'
+							className='w-[400px]'
+							value={selectedDate}
+							onChange={handleDateChange}
+							renderInput={params => <TextField {...params} />}
+						/>
+					</LocalizationProvider>
 
-					<Button
-						className='w-full !bg-green-300'
-						onClick={handleAddRow}
-						color='primary'
-					>
-						Qator qoshish
+					<Button className='w-full !bg-green-700' onClick={handleAddRow}>
+						<p className='text-white'>Qator qoshish</p>
 					</Button>
-					<Button
-						className='w-full !bg-blue-300'
-						onClick={handleSaveData}
-						color='success'
-					>
-						saqlash
+					<Button className='w-full !bg-slate-800' onClick={handleSaveData}>
+						<p className='text-white'>saqlash</p>
 					</Button>
 				</div>
 			</TableContainer>

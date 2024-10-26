@@ -1,8 +1,13 @@
 import { Gantt } from 'gantt-task-react'
 import 'gantt-task-react/dist/index.css'
 import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 const ConstructionTimeline = () => {
+	const dispatch = useDispatch()
+	const { tableData } = useSelector(select => select.table)
+
+	console.log(tableData)
 	const initialTasks = [
 		{
 			id: '1',
