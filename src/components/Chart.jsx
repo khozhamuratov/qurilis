@@ -21,19 +21,23 @@ const ConstructionTimeline = () => {
 	const [tasks] = useState(initialTasks)
 
 	return (
-		<div className='p-5 bg-[#f9f9f9]'>
-			<h2 className='text-center'>Календарный график строительных процессов</h2>
+		<div className='p-5 w-full'>
 			{tasks.length === 0 ? (
-				<p>Нет данных</p>
+				<p>Ma`lumotlar topilmadi</p>
 			) : (
-				<Gantt
-					tasks={tasks}
-					columnWidth={60}
-					barFill={80}
-					handleWidth={0}
-					listCellWidth='155px'
-					isEditable={false}
-				/>
+				<>
+					<h2 className='text-center'>
+						Qurilish processlarining kalendar grafiki
+					</h2>
+					<Gantt
+						tasks={tasks}
+						columnWidth={60}
+						barFill={80}
+						handleWidth={0}
+						listCellWidth='155px'
+						isEditable={false}
+					/>
+				</>
 			)}
 		</div>
 	)

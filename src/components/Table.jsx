@@ -30,7 +30,7 @@ const initialData = [
 		numTeam: '',
 		shifts: '',
 		workers: '',
-		duration: '', // Calculated field
+		duration: '',
 	},
 ]
 

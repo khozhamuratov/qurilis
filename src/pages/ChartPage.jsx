@@ -3,7 +3,7 @@ import ConstructionTimeline from '../components/Chart'
 
 const ChartPage = () => {
 	return (
-		<div className='w-full overflow-x-auto overflow-scroll'>
+		<div className='w-full h-screen overflow-x-auto overflow-scroll'>
 			<ConstructionTimeline />
 		</div>
 	)

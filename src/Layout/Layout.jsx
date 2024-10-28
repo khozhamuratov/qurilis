@@ -4,9 +4,9 @@ import Sidebar from './Sidebar'
 
 const Layout = () => {
 	return (
-		<div className='flex'>
+		<div className='flex w-full'>
 			<Sidebar />
-			<div className='bg-slate-200'>
+			<div className='bg-slate-200 w-full'>
 				<Outlet />
 			</div>
 		</div>
