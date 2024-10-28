@@ -1,4 +1,4 @@
-import { applyMiddleware, createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 
 export const tableSlice = createSlice({
 	name: 'table',
@@ -7,12 +7,9 @@ export const tableSlice = createSlice({
 	},
 	reducers: {
 		setTableData: (state, action) => {
-			state.tableData === action.payload
+			state.tableData = action.payload
 		},
 	},
-	middleware: applyMiddleware({
-		serializableCheck: false,
-	}),
 })
 
 export const { setTableData } = tableSlice.actions

@@ -13,7 +13,8 @@ import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { setTableData } from '../store/TableSlice/tableSlice'
 
 const initialData = [
 	{
@@ -37,6 +38,7 @@ function CrudTable() {
 	const [data, setData] = useState(initialData)
 	const [selectedDate, setSelectedDate] = useState(null)
 	const [value, setValue] = useState(null)
+	const { tableData } = useSelector(select => select.table)
 
 	const handleChange = (id, field, value) => {
 		const updatedData = data.map(row =>
@@ -46,7 +48,7 @@ function CrudTable() {
 	}
 
 	const handleDateChange = newValue => {
-		const formattedDate = dayjs(newValue).format('YYYY, MM, DD') // Example format
+		const formattedDate = dayjs(newValue).format('YYYY-MM-DD')
 		console.log('Selected Date:', formattedDate)
 		setSelectedDate(newValue)
 		setValue(formattedDate)
@@ -70,7 +72,7 @@ function CrudTable() {
 				numTeam: '',
 				shifts: '',
 				workers: '',
-				duration: '', // Calculated field
+				duration: '',
 			},
 		])
 	}
@@ -85,16 +87,23 @@ function CrudTable() {
 	}
 
 	const handleSaveData = () => {
-		// const updatedData = data.map(row => ({
-		// 	...row,
-		// 	peoplesDay: calculateKishiKun(row),
-		// 	machineDay: calculateMashKun(row),
-		// 	duration: calculateDuration(row),
-		// 	startDate: value.startDate.getTime(),
-		// }))
-		// dispatch(setTableData(updatedData))
-		// console.log('Data saved:', updatedData)
-		console.log(value)
+		const updatedData = data.map(row => {
+			const duration = calculateDuration(row)
+			const endDate = selectedDate
+				? dayjs(selectedDate).add(duration, 'day').format('YYYY-MM-DD')
+				: null
+
+			return {
+				...row,
+				peoplesDay: calculateKishiKun(row),
+				machineDay: calculateMashKun(row),
+				duration,
+				startDate: value,
+				endDate,
+			}
+		})
+
+		dispatch(setTableData(updatedData))
 	}
 
 	const calculateKishiKun = row => {
@@ -139,7 +148,7 @@ function CrudTable() {
 			}
 		}
 
-		return result < 1 ? 1 : Math.round(result)
+		return result < 1 ? 1 : Math.round(result) + 1
 	}
 
 	return (
@@ -567,7 +576,10 @@ function CrudTable() {
 						))}
 					</TableBody>
 				</Table>
-				<div className='flex w-[80%] py-5 gap-5 justify-between mx-auto items-center'>
+				<div
+					aria-required='true'
+					className='flex w-[80%] py-5 gap-5 justify-between mx-auto items-center'
+				>
 					<LocalizationProvider dateAdapter={AdapterDayjs}>
 						<DesktopDatePicker
 							label='Select a date'
