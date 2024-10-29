@@ -1,5 +1,6 @@
 import ChartPage from '../pages/ChartPage'
 import Home from '../pages/Home'
+import Machine from '../pages/Machine'
 import ReservationPage from '../pages/ReservationPage'
 import TablePage from '../pages/TablePage'
 import TechnicaPage from '../pages/TechnicaPage'
@@ -24,5 +25,9 @@ export const routes = [
 	{
 		path: '/techno',
 		component: TechnicaPage,
+	},
+	{
+		path: '/techno/:slug',
+		component: Machine,
 	},
 ]

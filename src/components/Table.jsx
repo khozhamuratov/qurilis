@@ -12,13 +12,14 @@ import {
 import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { v4 as uuidv4 } from 'uuid'
 import { setTableData } from '../store/TableSlice/tableSlice'
 
 const initialData = [
 	{
-		id: 1,
+		id: uuidv4(),
 		name: '',
 		unit: '',
 		numUnit: '',
@@ -55,6 +56,12 @@ function CrudTable() {
 	}
 
 	const dispatch = useDispatch()
+
+	useEffect(() => {
+		if (tableData.length) {
+			setData([...tableData, { ...initialData[0], id: uuidv4() }])
+		}
+	}, [tableData])
 
 	const handleAddRow = () => {
 		setData([

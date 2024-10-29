@@ -1,0 +1,8 @@
+export { default as Buldozer } from './images/buldozer.png'
+export { default as EksPogruzchik } from './images/eks-pogruzchik.png'
+export { default as Ekskovator } from './images/ekskovator.png'
+export { default as Greyder } from './images/greyder.png'
+export { default as MiniEkskovator } from './images/mini-ekskovator.jpg'
+export { default as Pogruzchik } from './images/pogruzchik.png'
+export { default as Samosval } from './images/samosval.jpg'
+export { default as Yotquzuvchi } from './images/yotquzuvchi.jpg'

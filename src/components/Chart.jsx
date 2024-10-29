@@ -21,7 +21,7 @@ const ConstructionTimeline = () => {
 	const [tasks] = useState(initialTasks)
 
 	return (
-		<div className='p-5 w-full'>
+		<div className='p-5'>
 			{tasks.length === 0 ? (
 				<p>Ma`lumotlar topilmadi</p>
 			) : (
