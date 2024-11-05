@@ -1,3 +1,4 @@
+import DeleteIcon from '@mui/icons-material/Delete'
 import {
 	Button,
 	Paper,
@@ -9,7 +10,7 @@ import {
 	TableRow,
 	TextField,
 } from '@mui/material'
-import { DesktopDatePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import { LocalizationProvider, MobileDatePicker } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import React, { useEffect, useState } from 'react'
@@ -32,30 +33,28 @@ const initialData = [
 		shifts: '',
 		workers: '',
 		duration: '',
+		selectedDate: dayjs(),
 	},
 ]
 
 function CrudTable() {
 	const [data, setData] = useState(initialData)
-	const [selectedDate, setSelectedDate] = useState(null)
-	const [value, setValue] = useState(null)
 	const { tableData } = useSelector(select => select.table)
+	const dispatch = useDispatch()
 
 	const handleChange = (id, field, value) => {
 		const updatedData = data.map(row =>
 			row.id === id ? { ...row, [field]: value } : row
 		)
+		console.log(updatedData)
+
 		setData(updatedData)
 	}
 
-	const handleDateChange = newValue => {
-		const formattedDate = dayjs(newValue).format('YYYY-MM-DD')
-		console.log('Selected Date:', formattedDate)
-		setSelectedDate(newValue)
-		setValue(formattedDate)
+	const handleDateChange = (id, newDate) => {
+		const formattedDate = dayjs(newDate) // Обеспечиваем формат dayjs
+		handleChange(id, 'selectedDate', formattedDate)
 	}
-
-	const dispatch = useDispatch()
 
 	useEffect(() => {
 		if (tableData.length) {
@@ -67,7 +66,7 @@ function CrudTable() {
 		setData([
 			...data,
 			{
-				id: data.length + 1,
+				id: uuidv4(),
 				name: '',
 				unit: '',
 				numUnit: '',
@@ -80,13 +79,9 @@ function CrudTable() {
 				shifts: '',
 				workers: '',
 				duration: '',
+				selectedDate: null,
 			},
 		])
-	}
-
-	function strToNum(str) {
-		const match = str.match(/^\d+/)
-		return match ? Number(match[0]) : null
 	}
 
 	const handleDeleteRow = id => {
@@ -96,8 +91,8 @@ function CrudTable() {
 	const handleSaveData = () => {
 		const updatedData = data.map(row => {
 			const duration = calculateDuration(row)
-			const endDate = selectedDate
-				? dayjs(selectedDate).add(duration, 'day').format('YYYY-MM-DD')
+			const endDate = row.selectedDate
+				? dayjs(row.selectedDate).add(duration, 'day').format('YYYY-MM-DD')
 				: null
 
 			return {
@@ -105,12 +100,16 @@ function CrudTable() {
 				peoplesDay: calculateKishiKun(row),
 				machineDay: calculateMashKun(row),
 				duration,
-				startDate: value,
+				startDate: row.selectedDate.format('YYYY-MM-DD'),
 				endDate,
 			}
 		})
 
 		dispatch(setTableData(updatedData))
+	}
+	function strToNum(str) {
+		const match = str.match(/^\d+/)
+		return match ? Number(match[0]) : null
 	}
 
 	const calculateKishiKun = row => {
@@ -159,7 +158,7 @@ function CrudTable() {
 	}
 
 	return (
-		<div className='flex flex-col items-start justify-center p-4 gap-5'>
+		<div className='w-full p-4 gap-5'>
 			<TableContainer
 				component={Paper}
 				sx={{ maxWidth: '100%', overflowX: 'auto', fontSize: 12 }}
@@ -188,7 +187,7 @@ function CrudTable() {
 							</TableCell>
 							<TableCell
 								rowSpan={2}
-								width={350}
+								width={250}
 								sx={{
 									textAlign: 'center',
 									backgroundColor: '#f5f5f5',
@@ -278,6 +277,7 @@ function CrudTable() {
 							</TableCell>
 							<TableCell
 								rowSpan={2}
+								width={30}
 								sx={{
 									textAlign: 'center',
 									backgroundColor: '#f5f5f5',
@@ -286,6 +286,18 @@ function CrudTable() {
 								}}
 							>
 								Ishlar davomiyligi, kun
+							</TableCell>
+							<TableCell
+								rowSpan={2}
+								width={30}
+								sx={{
+									textAlign: 'center',
+									backgroundColor: '#f5f5f5',
+									border: 1,
+									borderColor: 'grey.300',
+								}}
+							>
+								Boshlanish sanasi
 							</TableCell>
 						</TableRow>
 						<TableRow>
@@ -570,13 +582,29 @@ function CrudTable() {
 										border: 1,
 										borderColor: 'grey.300',
 										padding: '0',
+										display: 'flex',
+										justifyContent: 'center',
+										alignItems: 'center',
 									}}
 								>
-									<Button
-										onClick={() => handleDeleteRow(row.id)}
-										className='!bg-red-400'
-									>
-										<p className='text-[12px] text-black'>Ochirish</p>
+									<LocalizationProvider dateAdapter={AdapterDayjs}>
+										<MobileDatePicker
+											sx={{ width: '120px' }}
+											value={row.selectedDate ? dayjs(row.selectedDate) : null}
+											onChange={newDate => handleDateChange(row.id, newDate)}
+										/>
+									</LocalizationProvider>
+								</TableCell>
+								<TableCell
+									sx={{
+										textAlign: 'center',
+										border: 1,
+										borderColor: 'grey.300',
+										padding: '0',
+									}}
+								>
+									<Button onClick={() => handleDeleteRow(row.id)}>
+										<DeleteIcon className='text-[12px]' />
 									</Button>
 								</TableCell>
 							</TableRow>
@@ -587,19 +615,6 @@ function CrudTable() {
 					aria-required='true'
 					className='flex w-[80%] py-5 gap-5 justify-between mx-auto items-center'
 				>
-					<LocalizationProvider dateAdapter={AdapterDayjs}>
-						<DesktopDatePicker
-							label='Select a date'
-							className='w-[400px]'
-							value={selectedDate}
-							onChange={handleDateChange}
-							renderInput={params => <TextField {...params} />}
-						/>
-					</LocalizationProvider>
-
-					<Button className='w-full !bg-green-700' onClick={handleAddRow}>
-						<p className='text-white'>Qator qoshish</p>
-					</Button>
 					<Button className='w-full !bg-slate-800' onClick={handleSaveData}>
 						<p className='text-white'>saqlash</p>
 					</Button>

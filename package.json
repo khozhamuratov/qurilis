@@ -13,6 +13,7 @@
     "@consta/gantt-task-react-adapter": "^2.0.0",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.5",
     "@mui/material": "^6.1.5",
     "@mui/x-date-pickers": "^7.21.0",
     "@reduxjs/toolkit": "^2.3.0",

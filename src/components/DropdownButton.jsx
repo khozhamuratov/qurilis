@@ -9,7 +9,7 @@ const DropdownButton = ({ label, items }) => {
 	}
 
 	return (
-		<div className='relative'>
+		<div className='relative mt-4'>
 			<button
 				onClick={toggleDropdown}
 				className='flex items-center justify-between gap-3 w-full px-4 py-2 text-left bg-gray-800 text-white rounded-lg hover:bg-gray-700 focus:outline-none'
