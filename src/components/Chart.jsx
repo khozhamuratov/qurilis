@@ -26,17 +26,27 @@ const ConstructionTimeline = () => {
 				<p>Ma`lumotlar topilmadi</p>
 			) : (
 				<>
-					<h2 className='text-center'>
+					<h2 className='text-center mb-4 text-[22px] font-semibold'>
 						Qurilish processlarining kalendar grafiki
 					</h2>
-					<Gantt
-						tasks={tasks}
-						columnWidth={60}
-						barFill={80}
-						handleWidth={0}
-						listCellWidth='155px'
-						isEditable={false}
-					/>
+					<div className='bg-white rounded-md'>
+						<Gantt
+							handleWidth={70}
+							tasks={tasks}
+							columnWidth={80}
+							barFill={40}
+							listCellWidth='250px'
+							isEditable={true}
+							styles={{
+								barBackgroundColor: '#d1e7ff',
+								barProgressColor: '#007bff',
+								barBorderRadius: 4,
+								backgroundColor: '#ffffff',
+								gridColor: '#e5e5e5',
+								todayLineColor: '#ff6347',
+							}}
+						/>
+					</div>
 				</>
 			)}
 		</div>
