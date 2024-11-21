@@ -8,7 +8,7 @@ import {
 	ListItemText,
 } from '@mui/material'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import DropdownButton from '../components/DropdownButton'
 
 const LinkOrganization = [
@@ -28,6 +28,9 @@ const LinkMachine = [
 
 const Sidebar = () => {
 	const [isOpen, setIsOpen] = useState(false)
+	const location = useLocation()
+
+	const isHomePage = location.pathname === '/'
 
 	const toggleDrawer = () => {
 		setIsOpen(!isOpen)
@@ -35,17 +38,20 @@ const Sidebar = () => {
 
 	return (
 		<>
-			<IconButton
-				className='w-[50px] h-[60px] absolute z-20'
-				onClick={toggleDrawer}
-				color='inherit'
-			>
-				<MenuIcon />
-			</IconButton>
+			{!isHomePage && (
+				<IconButton
+					className='w-[50px] h-[60px] absolute z-20'
+					onClick={toggleDrawer}
+					color='inherit'
+				>
+					<MenuIcon />
+				</IconButton>
+			)}
 			<Drawer
 				anchor='left'
-				open={isOpen}
+				open={isHomePage || isOpen}
 				onClose={toggleDrawer}
+				variant={isHomePage ? 'permanent' : 'temporary'}
 				sx={{
 					'& .MuiDrawer-paper': {
 						width: 300,

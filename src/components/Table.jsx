@@ -8,7 +8,7 @@ import {
 	TableContainer,
 	TableHead,
 	TableRow,
-	TextField,
+	TextareaAutosize,
 } from '@mui/material'
 import { LocalizationProvider, MobileDatePicker } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -386,9 +386,9 @@ function CrudTable() {
 										width: '100%',
 									}}
 								>
-									<TextField
-										fullWidth
+									<TextareaAutosize
 										value={row.name}
+										className='w-full !h-[50px] pt-3 px-1'
 										onChange={e => handleChange(row.id, 'name', e.target.value)}
 										variant='outlined'
 										size='small'
@@ -403,8 +403,8 @@ function CrudTable() {
 										width: '100%',
 									}}
 								>
-									<TextField
-										fullWidth
+									<TextareaAutosize
+										className='w-full !h-[50px]  pt-3 px-1'
 										value={row.unit}
 										onChange={e => handleChange(row.id, 'unit', e.target.value)}
 										variant='outlined'
@@ -420,8 +420,8 @@ function CrudTable() {
 										width: '100%',
 									}}
 								>
-									<TextField
-										fullWidth
+									<TextareaAutosize
+										className='w-full !h-[50px]  pt-3 px-1'
 										value={row.numUnit}
 										onChange={e =>
 											handleChange(row.id, 'numUnit', e.target.value)
@@ -439,8 +439,8 @@ function CrudTable() {
 										width: '100%',
 									}}
 								>
-									<TextField
-										fullWidth
+									<TextareaAutosize
+										className='w-full !h-[50px]  pt-3 px-1'
 										value={row.volumePeople}
 										onChange={e =>
 											handleChange(row.id, 'volumePeople', e.target.value)
@@ -458,8 +458,8 @@ function CrudTable() {
 										width: '100%',
 									}}
 								>
-									<TextField
-										fullWidth
+									<TextareaAutosize
+										className='w-full !h-[50px]  pt-3 px-1'
 										value={row.volumeMachine}
 										onChange={e =>
 											handleChange(row.id, 'volumeMachine', e.target.value)
@@ -497,8 +497,8 @@ function CrudTable() {
 										width: '100%',
 									}}
 								>
-									<TextField
-										fullWidth
+									<TextareaAutosize
+										className='w-full !h-[50px]  pt-3 px-1'
 										value={row.nameTeam}
 										onChange={e =>
 											handleChange(row.id, 'nameTeam', e.target.value)
@@ -516,15 +516,14 @@ function CrudTable() {
 										width: '100%',
 									}}
 								>
-									<TextField
-										fullWidth
+									<TextareaAutosize
+										className='w-full !h-[50px]  pt-3 px-1'
 										value={row.numTeam}
 										onChange={e =>
 											handleChange(row.id, 'numTeam', e.target.value)
 										}
 										variant='outlined'
 										size='small'
-										className='text-[10px]'
 										sx={{ borderRadius: 0, width: '100%' }}
 									/>
 								</TableCell>
@@ -536,8 +535,8 @@ function CrudTable() {
 										width: '100%',
 									}}
 								>
-									<TextField
-										fullWidth
+									<TextareaAutosize
+										className='w-full !h-[50px]  pt-3 px-1'
 										value={row.shifts}
 										onChange={e =>
 											handleChange(row.id, 'shifts', e.target.value)
@@ -555,8 +554,8 @@ function CrudTable() {
 										width: '100%',
 									}}
 								>
-									<TextField
-										fullWidth
+									<TextareaAutosize
+										className='w-full !h-[50px]  pt-3 px-1'
 										value={row.workers}
 										onChange={e =>
 											handleChange(row.id, 'workers', e.target.value)
