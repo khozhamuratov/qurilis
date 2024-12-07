@@ -65,7 +65,11 @@ const Sidebar = () => {
 						<ListItem>
 							<ListItemText
 								primary='Qurilishni tashkil etish'
-								primaryTypographyProps={{ fontSize: 24, textAlign: 'center' }}
+								primaryTypographyProps={{
+									fontSize: 24,
+									textAlign: 'center',
+									fontFamily: 'serif',
+								}}
 							/>
 						</ListItem>
 					</Link>
