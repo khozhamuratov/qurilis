@@ -1,28 +1,25 @@
-import { Card, CardContent, CardMedia, Typography } from '@mui/material'
+import { Card, CardContent, Typography } from '@mui/material'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const MachineCard = ({ item }) => {
 	console.log(item)
 	return (
-		<Card className='rounded-md flex flex-col' sx={{ maxWidth: 345 }}>
-			<CardContent>
-				<Typography gutterBottom variant='h5' component='div'>
-					{item.title}
-				</Typography>
-				<Typography variant='body2' sx={{ color: 'text.secondary' }}>
-					{item.params}
-				</Typography>
-			</CardContent>
-			<div className='p-4'>
-				<CardMedia
-					component='img'
-					height='200'
-					src={item.img}
-					className='mt-auto inline-block w-[200px] h-[200px] overflow-visible object-cover p-4'
-					alt='Ekskavator'
-				/>
-			</div>
-		</Card>
+		<Link className='h-[500px] w-[400px]' to={item.path}>
+			<Card className='flex flex-col'>
+				<CardContent>
+					<Typography gutterBottom variant='h5' component='div'>
+						{item.title}
+					</Typography>
+					<Typography variant='body2' sx={{ color: 'text.secondary' }}>
+						{item.params}
+					</Typography>
+				</CardContent>
+				<div className='p-4'>
+					<img src={item.img} className='object-cover' alt='Ekskavator' />
+				</div>
+			</Card>
+		</Link>
 	)
 }
 
